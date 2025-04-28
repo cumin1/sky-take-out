@@ -1,23 +1,37 @@
 package com.sky.service.impl;
 
+import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.properties.JwtProperties;
 import com.sky.service.EmployeeService;
+import com.sky.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
+    @Autowired
+    private JwtProperties jwtProperties;
 
     /**
      * 员工登录
@@ -52,6 +66,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //3、返回实体对象
         return employee;
+    }
+
+    /**
+     * 新增员工
+     * @param employeeDTO
+     * @return
+     */
+    public void addEmployee(EmployeeDTO employeeDTO){
+        Employee employee = new Employee();
+        // 对象属性拷贝 设置传递过来的属性
+        BeanUtils.copyProperties(employeeDTO,employee);
+        // 设置md5加密之后的默认密码
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+        employee.setStatus(StatusConstant.ENABLE);  // 设置状态
+        employee.setCreateTime(LocalDateTime.now());  // 设置创建和修改时间
+        employee.setUpdateTime(LocalDateTime.now());
+
+        // 从线程局部变量中获取员工id
+        Long empId = BaseContext.getCurrentId();
+        employee.setCreateUser(empId);   // 设置创建人和更新的人 暂时设置为10
+        employee.setUpdateUser(empId);
+
+        employeeMapper.insert(employee);
     }
 
 }
