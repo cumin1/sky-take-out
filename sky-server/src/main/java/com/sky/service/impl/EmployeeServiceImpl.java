@@ -128,4 +128,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.update(employee);
     }
 
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee selectById(Long id) {
+        Employee employee = employeeMapper.selectById(id);
+        if(employee==null){
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
+        employee.setPassword("****");
+        return employee;
+    }
 }
