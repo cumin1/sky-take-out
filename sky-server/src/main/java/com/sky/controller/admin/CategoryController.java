@@ -9,9 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 分类管理
@@ -36,5 +34,21 @@ public class CategoryController {
         log.info("分页分页查询：{}",categoryPageQueryDTO);
         PageResult pageResult = categoryService.selectByPage(categoryPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+
+    /**
+     * 启用禁用分类
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用分类")
+    public Result setStatus(@PathVariable Integer status, Long id)
+    {
+        log.info("启用禁用分类:{} {}",status,id);
+        categoryService.setStatus(status,id);
+        return Result.success();
     }
 }

@@ -30,4 +30,16 @@ public class CategoryServiceImpl implements CategoryService {
         pageResult.setRecords(page.getResult());
         return pageResult;
     }
+
+
+    /**
+     * 启用禁用分类
+     * @param status
+     * @param id
+     */
+    @Override
+    public void setStatus(Integer status, Long id) {
+        Category category = Category.builder().id(id).status(status).build();
+        categoryMapper.update(category);
+    }
 }

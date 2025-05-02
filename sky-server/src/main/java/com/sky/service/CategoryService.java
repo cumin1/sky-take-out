@@ -12,4 +12,12 @@ public interface CategoryService {
      * @return
      */
     PageResult selectByPage(CategoryPageQueryDTO categoryPageQueryDTO);
+
+
+    /**
+     * 启用禁用分类
+     * @param status
+     * @param id
+     */
+    void setStatus(Integer status, Long id);
 }
