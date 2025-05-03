@@ -23,4 +23,12 @@
             </if>
         </where>
     </select>
+    <select id="list" resultType="com.sky.entity.Category">
+        select * from category
+        where status = 1
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        order by sort asc,create_time desc
+    </select>
 </mapper>
