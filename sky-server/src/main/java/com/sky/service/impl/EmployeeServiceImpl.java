@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
@@ -11,6 +12,7 @@ import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
@@ -100,7 +102,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeePageQueryDTO
      * @return
      */
-    @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         // 使用pagehelper工具进行分页查询
         PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
@@ -118,7 +119,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param status
      * @param id
      */
-    @Override
     public void startOrStop(Integer status, Long id) {
         // update employee set status = ? where id = ?;
         Employee employee = Employee.builder()
@@ -133,7 +133,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id
      * @return
      */
-    @Override
     public Employee selectById(Long id) {
         Employee employee = employeeMapper.selectById(id);
         if(employee==null){
@@ -148,7 +147,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 修改员工数据
      * @param employeeDTO
      */
-    @Override
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO,employee);
