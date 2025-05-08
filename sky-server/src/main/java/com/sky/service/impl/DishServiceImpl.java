@@ -1,10 +1,8 @@
 package com.sky.service.impl;
 
-import com.sky.annotation.AutoFill;
 import com.sky.dto.DishDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
-import com.sky.enumeration.OperationType;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.service.DishService;
@@ -37,7 +35,7 @@ public class DishServiceImpl implements DishService {
         // 向口味表插入多条数据
         Long dishId = dish.getId();  // 获取到生成的主键值
         List<DishFlavor> flavors = dishDTO.getFlavors();  // 取出口味集合
-        if (flavors != null && flavors.size() > 0) {
+        if (flavors != null && !flavors.isEmpty()) {
             flavors.forEach(dishFlavor -> {
                 dishFlavor.setDishId(dishId);
             });  // 遍历数组 将每个dishFlavor对象的id进行赋值
