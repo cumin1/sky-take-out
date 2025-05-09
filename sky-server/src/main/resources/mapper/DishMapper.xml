@@ -7,4 +7,30 @@
         insert into dish (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values (#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
+
+    <select id="selectByPage" resultType="com.sky.vo.DishVO">
+        SELECT
+        d.id as id,
+        d.name as name,
+        d.category_id as categoryId,
+        d.price as price,
+        d.image as image,
+        d.description as description,
+        d.status as status,
+        d.update_time as updateTime,
+        c.name as categoryName
+        FROM dish d LEFT JOIN category c ON d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                AND d.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                AND d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+        </where>
+        ORDER BY d.update_time DESC
+    </select>
 </mapper>
