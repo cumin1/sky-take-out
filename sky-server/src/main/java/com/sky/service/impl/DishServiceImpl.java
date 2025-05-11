@@ -9,11 +9,9 @@ import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Category;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
 import com.sky.exception.DeletionNotAllowedException;
-import com.sky.mapper.CategoryMapper;
-import com.sky.mapper.DishFlavorMapper;
-import com.sky.mapper.DishMapper;
-import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -22,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,6 +39,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private SetmealMapper setmealMapper;
 
     /**
      * 新增菜品和对应口味
@@ -140,6 +143,38 @@ public class DishServiceImpl implements DishService {
             });  // 遍历数组 将每个dishFlavor对象的id进行赋值
             // 批量插入n条数据
             dishFlavorMapper.insertBatch(flavors);
+        }
+    }
+
+
+    /**
+     * 启用/停售菜品
+     * @param id
+     * @param status
+     */
+    @Transactional
+    public void setStatus(Long id, Integer status) {
+        Dish dish = new Dish();
+        dish.setId(id);
+        dish.setStatus(status);
+        if (status.equals(StatusConstant.DISABLE)) {
+            // 先处理套餐停售
+            List<Long> dishIds = Collections.singletonList(id);
+            List<Long> setmealIds = setmealDishMapper.selectIdsByDishIds(dishIds);
+
+            if (setmealIds != null && !setmealIds.isEmpty()) {
+                for (Long setmealId : setmealIds) {
+                    Setmeal setmeal = new Setmeal();
+                    setmeal.setId(setmealId);
+                    setmeal.setStatus(StatusConstant.DISABLE);
+                    setmealMapper.update(setmeal);
+                }
+            }
+            // 再更新菜品状态
+            dishMapper.update(dish);
+        } else {
+            // 启用直接更新菜品
+            dishMapper.update(dish);
         }
     }
 }

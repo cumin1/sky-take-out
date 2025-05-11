@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 
