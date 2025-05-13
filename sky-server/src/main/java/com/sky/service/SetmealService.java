@@ -2,7 +2,10 @@ package com.sky.service;
 
 import com.sky.dto.*;
 import com.sky.entity.Employee;
+import com.sky.entity.Setmeal;
 import com.sky.result.PageResult;
+
+import java.util.List;
 
 public interface SetmealService {
 
@@ -19,4 +22,11 @@ public interface SetmealService {
      * @return
      */
     PageResult selectByPage(SetmealPageQueryDTO queryDTO);
+
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     */
+    void deleteBatch(List<Long> ids);
 }

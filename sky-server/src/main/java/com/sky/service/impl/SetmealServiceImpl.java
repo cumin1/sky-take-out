@@ -9,8 +9,10 @@ import com.sky.dto.*;
 import com.sky.entity.Employee;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.mapper.SetmealDishMapper;
@@ -67,5 +69,27 @@ public class SetmealServiceImpl implements SetmealService {
         Page<SetmealVO> page = setmealMapper.selectByPage(queryDTO);
         PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
         return pageResult;
+    }
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     */
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        for (Long id : ids) {
+            // 起售状态的套餐不可删除
+            Setmeal setmeal = setmealMapper.getById(id);
+            if(setmeal.getStatus() == StatusConstant.ENABLE){
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            }
+        }
+
+        ids.forEach(setmealId -> {
+            //删除套餐表中的数据
+            setmealMapper.deleteById(setmealId);
+            //删除套餐菜品关系表中的数据
+            setmealDishMapper.deleteBySetmealId(setmealId);
+        });
     }
 }
