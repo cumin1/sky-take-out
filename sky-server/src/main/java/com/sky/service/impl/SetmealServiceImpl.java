@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
-import com.sky.dto.EmployeeDTO;
-import com.sky.dto.EmployeeLoginDTO;
-import com.sky.dto.EmployeePageQueryDTO;
-import com.sky.dto.SetmealDTO;
+import com.sky.dto.*;
 import com.sky.entity.Employee;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
@@ -22,6 +19,7 @@ import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,5 +54,18 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDish.setSetmealId(setmealId);
         }
         setmealDishMapper.insertBatch(setmealDishList);
+    }
+
+
+    /**
+     * 套餐分页查询
+     * @param queryDTO
+     * @return
+     */
+    public PageResult selectByPage(SetmealPageQueryDTO queryDTO) {
+        PageHelper.startPage(queryDTO.getPage(), queryDTO.getPageSize());
+        Page<SetmealVO> page = setmealMapper.selectByPage(queryDTO);
+        PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
+        return pageResult;
     }
 }
