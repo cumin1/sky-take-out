@@ -92,4 +92,44 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDishMapper.deleteBySetmealId(setmealId);
         });
     }
+
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    @Transactional
+    public SetmealVO selectById(Long id) {
+        Setmeal setmeal = setmealMapper.getById(id);
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setmeal, setmealVO);
+        // 查询套餐id对应的菜品列表
+        List<SetmealDish> setmealDishList = setmealDishMapper.selectByDishId(id);
+        setmealVO.setSetmealDishes(setmealDishList);
+        return setmealVO;
+    }
+
+
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     */
+    @Transactional
+    public void update(SetmealDTO setmealDTO) {
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+        // 更新套餐表
+        setmealMapper.update(setmeal);
+        // 获取套餐id
+        Long setmealId = setmealDTO.getId();
+        // 根据套餐id删除套餐菜品关系表
+        setmealDishMapper.deleteBySetmealId(setmealId);
+        // 重新插入套餐关系表信息
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        for (SetmealDish setmealDish : setmealDishes) {
+            setmealDish.setSetmealId(setmealId);
+        }
+        setmealDishMapper.insertBatch(setmealDishes);
+    }
 }
