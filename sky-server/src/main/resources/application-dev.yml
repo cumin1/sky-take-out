@@ -12,3 +12,9 @@ sky:
     access-key-secret: rgvh8U9obbMlxoDXt8s0vRjMv6NApa
     bucket-name: web-fuhao
     endpoint: oss-cn-hangzhou.aliyuncs.com
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 0
