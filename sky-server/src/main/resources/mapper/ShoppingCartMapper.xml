@@ -23,14 +23,15 @@
     <update id="update">
         update shopping_cart
         <set>
-            <if test="dish_id != null">dish_id = #{dishId}</if>
-            <if test="setmeal_id != null">setmeal_id = #{setmealId}</if>
-            <if test="dish_flavor != null">dish_flavor = #{dishFlavor}</if>
-            <if test="number != null">number = #{number}</if>
-            <if test="amount != null">amount = #{amount}</if>
+            <if test="dishId != null">dish_id = #{dishId},</if>
+            <if test="setmealId != null">setmeal_id = #{setmealId},</if>
+            <if test="dishFlavor != null">dish_flavor = #{dishFlavor},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="amount != null">amount = #{amount},</if>
         </set>
         where id = #{id}
     </update>
+
     <insert id="insert">
         insert into shopping_cart
         (name,image,user_id,dish_id,setmeal_id,dish_flavor,number,amount,create_time)
