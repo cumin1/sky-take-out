@@ -38,4 +38,6 @@
         values
         (#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{number},#{amount},#{createTime})
     </insert>
+
+
 </mapper>
