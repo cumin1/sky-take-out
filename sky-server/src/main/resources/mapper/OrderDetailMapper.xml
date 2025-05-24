@@ -4,11 +4,11 @@
 
     <insert id="insertBatch">
         insert into order_detail
-        (name,image,order_id,dish_id,setmeal_id,dish_flavor,number,amount)
+        (name, image, order_id, dish_id, setmeal_id, dish_flavor, number, amount)
         values
-        <foreach collection="orderDetailList" item="od">
-            (#{od.name},#{od.image},#{od.orderId},#{od.dishId},#{od.setmealId},#{od.dishFlavor},#{od.number},#{od.amount})
+        <foreach collection="orderDetailList" item="od" separator=",">
+            (#{od.name}, #{od.image}, #{od.orderId}, #{od.dishId},
+            #{od.setmealId}, #{od.dishFlavor}, #{od.number}, #{od.amount})
         </foreach>
-
     </insert>
 </mapper>
