@@ -1,8 +1,11 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.*;
@@ -10,10 +13,12 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,5 +164,41 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+    }
+
+
+    /**
+     * 历史订单查询
+     * @param pageNum, pageSize, status
+     * @return
+     */
+    public PageResult selectByPage(int pageNum, int pageSize, Integer status) {
+        PageHelper.startPage(pageNum,pageSize);
+
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        ordersPageQueryDTO.setStatus(status);
+
+        // 条件查询订单表所有的记录
+        Page<Orders> ordersPage = orderMapper.selectByPage(ordersPageQueryDTO);
+
+        List<OrderVO> list = new ArrayList();
+
+        if (ordersPage != null) {
+            for (Orders order : ordersPage) {
+                OrderVO orderVO = new OrderVO();
+                Long orderId = order.getId();
+                // 根据订单id查出订单明细
+                List<OrderDetail> orderDetails = orderDetailMapper.selectByOrderId(orderId);
+                BeanUtils.copyProperties(order, orderVO);
+                orderVO.setOrderDetailList(orderDetails);
+                list.add(orderVO);
+            }
+        }
+
+        PageResult pageResult = new PageResult();
+        pageResult.setTotal(ordersPage.getTotal());
+        pageResult.setRecords(list);
+        return pageResult;
     }
 }
