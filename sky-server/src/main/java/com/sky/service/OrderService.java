@@ -51,4 +51,11 @@ public interface OrderService {
      * @param id
      */
     void deleteOrder(Long id);
+
+
+    /**
+     * 再来一单
+     * @param id
+     */
+    void nextOrder(Long id);
 }

@@ -96,4 +96,17 @@ public class OrderController {
         orderService.deleteOrder(id);
         return Result.success();
     }
+
+
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
+    @PostMapping("/repetition/{id}")
+    public Result nextOrder(@PathVariable Long id){
+        log.info("再来一单: {}",id);
+        orderService.nextOrder(id);
+        return Result.success();
+    }
 }
