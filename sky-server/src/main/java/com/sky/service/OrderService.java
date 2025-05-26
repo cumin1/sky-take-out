@@ -58,4 +58,12 @@ public interface OrderService {
      * @param id
      */
     void nextOrder(Long id);
+
+
+    /**
+     * 订单搜素
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    PageResult search(OrdersPageQueryDTO ordersPageQueryDTO);
 }

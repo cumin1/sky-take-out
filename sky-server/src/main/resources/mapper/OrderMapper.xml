@@ -53,4 +53,16 @@
         </where>
         order by order_time desc
     </select>
+    <!-- 订单搜索 -->
+    <select id="searchOrders" resultType="com.sky.entity.Orders">
+        select * from orders
+        <where>
+            <if test="number != null and number != ''">and number like concat('%',#{number},'%')</if>
+            <if test="phone != null and phone != ''">and phone like concat('%',#{phone},'%')</if>
+            <if test="status != null">and status = #{status}</if>
+            <if test="beginTime != null">AND order_time &gt;= #{beginTime}</if>
+            <if test="endTime != null">AND order_time &lt;= #{endTime}</if>
+        </where>
+        ORDER BY order_time DESC
+    </select>
 </mapper>
