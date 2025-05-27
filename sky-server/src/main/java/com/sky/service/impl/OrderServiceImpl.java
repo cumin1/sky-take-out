@@ -432,4 +432,30 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(order);
     }
+
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    public void delivery(Long id) {
+        /**
+         * - 派送订单其实就是将订单状态修改为“派送中”
+         * - 只有状态为“待派送”的订单可以执行派送订单操作
+         */
+        Orders orderDB = orderMapper.selectById(id);
+        if(orderDB==null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        if(orderDB.getStatus() != Orders.CONFIRMED){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders order = Orders.builder()
+                .id(id)
+                .status(Orders.DELIVERY_IN_PROGRESS)
+                .build();
+
+        orderMapper.update(order);
+    }
 }
