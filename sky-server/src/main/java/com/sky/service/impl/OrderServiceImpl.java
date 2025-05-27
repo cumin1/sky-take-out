@@ -458,4 +458,28 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(order);
     }
+
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    public void complete(Long id) {
+        /**
+         * - 完成订单其实就是将订单状态修改为“已完成”
+         * - 只有状态为“派送中”的订单可以执行订单完成操作
+         */
+        Orders orderDB = orderMapper.selectById(id);
+        if(orderDB==null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        if(orderDB.getStatus() != Orders.DELIVERY_IN_PROGRESS){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders order = Orders.builder()
+                .id(id)
+                .status(Orders.COMPLETED)
+                .build();
+        orderMapper.update(order);
+    }
 }
