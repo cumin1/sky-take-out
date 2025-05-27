@@ -352,9 +352,9 @@ public class OrderServiceImpl implements OrderService {
     public OrderStatisticsVO statistics() {
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
         //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
-        orderStatisticsVO.setToBeConfirmed(orderMapper.countStatus(2));
-        orderStatisticsVO.setConfirmed(orderMapper.countStatus(3));
-        orderStatisticsVO.setDeliveryInProgress(orderMapper.countStatus(4));
+        orderStatisticsVO.setToBeConfirmed(orderMapper.countStatus(Orders.TO_BE_CONFIRMED));
+        orderStatisticsVO.setConfirmed(orderMapper.countStatus(Orders.CONFIRMED));
+        orderStatisticsVO.setDeliveryInProgress(orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS));
         return orderStatisticsVO;
     }
 }
