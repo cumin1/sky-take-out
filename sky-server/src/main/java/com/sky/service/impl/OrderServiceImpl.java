@@ -5,10 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -372,6 +369,67 @@ public class OrderServiceImpl implements OrderService {
                 .id(ordersConfirmDTO.getId())
                 .status(Orders.CONFIRMED)
                 .build();
+        orderMapper.update(order);
+    }
+
+
+    /**
+     * 拒单
+     * @param ordersRejectionDTO
+     */
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        /**
+         * - 商家拒单其实就是将订单状态修改为“已取消”
+         * - 只有订单处于“待接单”状态时可以执行拒单操作
+         * - 商家拒单时需要指定拒单原因
+         * - 商家拒单时，如果用户已经完成了支付，需要为用户退款
+         */
+        Orders orders = orderMapper.selectById(ordersRejectionDTO.getId());
+        if (orders == null || orders.getStatus() != Orders.TO_BE_CONFIRMED) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders order = Orders.builder()
+                .id(ordersRejectionDTO.getId())
+                .rejectionReason(ordersRejectionDTO.getRejectionReason())
+                .status(Orders.CANCELLED)
+                .cancelTime(LocalDateTime.now())
+                .build();
+
+        if(orders.getPayStatus() == Orders.PAID){
+            // 如果订单已支付 需要退款
+            order.setStatus(7);;
+        }
+
+        orderMapper.update(order);
+    }
+
+    /**
+     * 取消订单
+     * @param ordersCancelDTO
+     */
+    public void cancel(OrdersCancelDTO ordersCancelDTO) {
+        /**
+         * - 取消订单其实就是将订单状态修改为“已取消”
+         * - 商家取消订单时需要指定取消原因
+         * - 商家取消订单时，如果用户已经完成了支付，需要为用户退款
+         */
+        Orders orderDB = orderMapper.selectById(ordersCancelDTO.getId());
+        if(orderDB==null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        Orders order = Orders.builder()
+                .id(ordersCancelDTO.getId())
+                .status(Orders.CANCELLED)
+                .cancelReason(ordersCancelDTO.getCancelReason())
+                .cancelTime(LocalDateTime.now())
+                .build();
+
+        if(orderDB.getPayStatus() == Orders.PAID){
+            // 退款
+            order.setStatus(7);
+        }
+
         orderMapper.update(order);
     }
 }
