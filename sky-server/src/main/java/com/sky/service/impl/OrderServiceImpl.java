@@ -499,4 +499,21 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         orderMapper.update(order);
     }
+
+
+    /**
+     * 客户催单
+     * @param id
+     */
+    public void reminder(Long id) {
+        Orders orderDB = orderMapper.selectById(id);
+        if(orderDB==null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        Map map = new HashMap();
+        map.put("type",2);
+        map.put("orderId",id);
+        map.put("content","订单号: "+orderDB.getNumber());
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
 }

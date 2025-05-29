@@ -1,6 +1,7 @@
 package com.sky.controller.user;
 
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
@@ -107,6 +108,20 @@ public class OrderController {
     public Result nextOrder(@PathVariable Long id){
         log.info("再来一单: {}",id);
         orderService.nextOrder(id);
+        return Result.success();
+    }
+
+
+    /**
+     * 用户催单
+     * @param id
+     * @return
+     */
+    @GetMapping("/reminder/{id}")
+    @ApiOperation("用户催单")
+    public Result reminder(@PathVariable Long id){
+        log.info("用户催单: {}",id);
+        orderService.reminder(id);
         return Result.success();
     }
 }
