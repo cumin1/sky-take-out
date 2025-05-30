@@ -37,7 +37,8 @@ public class ReportServiceImpl implements ReportService {
             begin = begin.plusDays(1);
         }
         localDateList.add(begin);
-        String dateListString = StringUtil.join(",", localDateList);
+        String dateListString = StringUtil.join(",", localDateList).replace("[", "")
+                .replace("]", "");
 
         // 根据日期列表的每个日期 查询当天总金额
         List<Double> amountList = new ArrayList<>();
@@ -46,9 +47,11 @@ public class ReportServiceImpl implements ReportService {
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
             Double amount = reportMapper.getAmountByDate(beginTime,endTime);
+            amount = amount == null ? 0.0 : amount;
             amountList.add(amount);
         }
-        String amountListString = StringUtil.join(",", amountList);
+        String amountListString = StringUtil.join(",", amountList).replace("[", "")
+                .replace("]", "");
 
         return TurnoverReportVO.builder().dateList(dateListString).turnoverList(amountListString).build();
     }
