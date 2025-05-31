@@ -1,12 +1,14 @@
 package com.sky.mapper;
 
 
+import com.sky.dto.GoodsSalesDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface ReportMapper {
@@ -34,4 +36,6 @@ public interface ReportMapper {
 
     @Select("select count(*) from orders where order_time BETWEEN #{beginTime} AND #{endTime} and status = 5")
     Long getValidOrderCountByDate(LocalDateTime beginTime, LocalDateTime endTime);
+
+    List<GoodsSalesDTO> getTop10(LocalDateTime beginTime, LocalDateTime endTime);
 }
