@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Mapper
@@ -21,4 +22,16 @@ public interface ReportMapper {
             @Param("beginTime") LocalDateTime beginTime,
             @Param("endTime") LocalDateTime endTime
     );
+
+    @Select("select count(*) from orders where order_time BETWEEN #{begin} AND #{end}")
+    Long getOrderCount(LocalDate begin, LocalDate end);
+
+    @Select("select count(*) from orders where order_time BETWEEN #{begin} AND #{end} and status = 5")
+    Long getVaildOrderCount(LocalDate begin, LocalDate end);
+
+    @Select("select count(*) from orders where order_time BETWEEN #{beginTime} AND #{endTime}")
+    Long getOrderCountByDate(LocalDateTime beginTime, LocalDateTime endTime);
+
+    @Select("select count(*) from orders where order_time BETWEEN #{beginTime} AND #{endTime} and status = 5")
+    Long getValidOrderCountByDate(LocalDateTime beginTime, LocalDateTime endTime);
 }

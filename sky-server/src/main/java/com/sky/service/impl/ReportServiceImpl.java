@@ -1,7 +1,10 @@
 package com.sky.service.impl;
 
+import com.sky.entity.Orders;
+import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ReportMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.poi.util.StringUtil;
@@ -108,6 +111,74 @@ public class ReportServiceImpl implements ReportService {
                 .dateList(dateListString)
                 .totalUserList(totalListString)
                 .newUserList(newUserListString)
+                .build();
+    }
+
+
+    /**
+     * 订单统计接口
+     * @param begin
+     * @param end
+     * @return
+     */
+    public OrderReportVO ordersStatistics(LocalDate begin, LocalDate end) {
+        /**
+         * dateList 日期列表，以逗号分隔
+         * orderCompletionRate 订单完成率
+         * orderCountList 订单数列表，以逗号分隔
+         * totalOrderCount 订单总数
+         * validOrderCount 有效订单数
+         * validOrderCountList 有效订单数列表，以逗号分隔
+         */
+        // 日期列表
+        List<LocalDate> localDateList = new ArrayList<>();
+        while (begin.isBefore(end)) {
+            localDateList.add(begin);
+            begin = begin.plusDays(1);
+        }
+        localDateList.add(begin);
+        String dateListString = String.join(",", localDateList.stream()
+                .map(LocalDate::toString)
+                .collect(Collectors.toList()));
+        // 订单总数
+        begin = localDateList.get(0);
+        Long totalOrderCount = reportMapper.getOrderCount(begin,end);
+        // 有效订单数
+        Long validOrderCount = reportMapper.getVaildOrderCount(begin,end);
+        // 订单完成率
+        Double orderCompletionRate = (double) validOrderCount/(double) totalOrderCount;
+        // 订单数列表，以逗号分隔
+        List<Long> orderCountList = new ArrayList<>();
+        for (LocalDate date : localDateList) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            Long count = reportMapper.getOrderCountByDate(beginTime,endTime);
+            count = count == null ? 0 : count;
+            orderCountList.add(count);
+        }
+        String orderCountListString = String.join(",", orderCountList.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList()));
+        // 有效订单数列表，以逗号分隔
+        List<Long> orderValidCountList = new ArrayList<>();
+        for (LocalDate date : localDateList) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            Long count = reportMapper.getValidOrderCountByDate(beginTime,endTime);
+            count = count == null ? 0 : count;
+            orderValidCountList.add(count);
+        }
+        String orderValidCountListString = String.join(",", orderValidCountList.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList()));
+
+        return OrderReportVO.builder()
+                .dateList(dateListString)
+                .orderCountList(orderCountListString)
+                .validOrderCountList(orderValidCountListString)
+                .orderCompletionRate(orderCompletionRate)
+                .validOrderCount(Math.toIntExact(validOrderCount))
+                .totalOrderCount(Math.toIntExact(totalOrderCount))
                 .build();
     }
 }
