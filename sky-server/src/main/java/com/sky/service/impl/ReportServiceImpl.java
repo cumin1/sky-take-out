@@ -193,7 +193,7 @@ public class ReportServiceImpl implements ReportService {
      */
     public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
         LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
-        LocalDateTime endTime = LocalDateTime.of(begin, LocalTime.MAX);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
         List<GoodsSalesDTO> top10 = reportMapper.getTop10(beginTime, endTime);
         List<String> nameList = new ArrayList<>();
         List<Integer> numberList = new ArrayList<>();
